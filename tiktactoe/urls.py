@@ -14,13 +14,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.urls import path
 from django.contrib import admin
 from django.views.generic import TemplateView
 from tiktactoe_app import views
 
 urlpatterns = [
-    url(r'new_game/', views.new_game, name="new_game"),
-    url(r'move/', views.move, name="move"),
-    url(r'^admin/', admin.site.urls),
-    url(r'', TemplateView.as_view(template_name="index.html"), name="index"),
+    path('previous_data/', views.previous_data, name="previous_data"),
+    path('fillup_username/', views.fillup_username, name="fillup_username"),
+    path('new_game/<str:game_id>/', views.game_screen, name="screen"),
+    path('create_new_game/', views.create_new_game, name="create_new_game"),
+    path('move/', views.move, name="move"),
+    path('admin/', admin.site.urls),
+    path('', TemplateView.as_view(template_name="index.html"), name="index"),
 ]

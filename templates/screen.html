@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
 {% block base %}
+{% csrf_token %}
 <style>
     .new_game{
         display: none !important;
@@ -7,26 +8,117 @@
 </style>
 <div class="col-md-12" style="margin-top: 100px;">
     <div class="mx-auto text-center">
-        <h1>Your Game Id Is <span style="color: red;">{{ game_id }}</span></h1>
+        <h1>T3.Micro</h1>
         <div class="table-responsive mx-auto text-center col-md-3">
             <table class="table mx-auto text-center" style="margin-top: 80px;">
                 <tr>
-                    <td><i style="font-size: 2rem;" class="far fa-circle"></i></td>
-                    <td><i style="font-size: 2rem;" class="fa fa-times"></i></td>
-                    <td><i style="font-size: 2rem;" class="fa fa-times"></i></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm1');" class="sm1"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm2');" class="sm2"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm3');" class="sm3"></td>
                 </tr>
                 <tr>
-                    <td><i style="font-size: 2rem;" class="fa fa-times"></i></td>
-                    <td><i style="font-size: 2rem;" class="far fa-circle"></i></td>
-                    <td><i style="font-size: 2rem;" class="fa fa-times"></i></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm4');" class="sm4"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm5');" class="sm5"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm6');" class="sm6"></td>
                 </tr>
                 <tr>
-                    <td><i style="font-size: 2rem;" class="far fa-circle"></i></td>
-                    <td><i style="font-size: 2rem;" class="fa fa-times"></i></td>
-                    <td><i style="font-size: 2rem;" class="fa fa-times"></i></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm7');" class="sm7"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm8');" class="sm8"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm9');" class="sm9"></td>
                 </tr>
             </table>
         </div>
     </div>
 </div>
+<input type="text" style="display: none;" class="game_id" value="{{game_id}}">
+<script>
+    $(document).ready(function(){
+        ask_username();
+        previous_gamedata();
+    });
+    function ask_username(){
+        if(!!$.cookie('username')){
+            
+        }
+        else{
+            let username = prompt('Choose An Username').toUpperCase();
+            $.cookie('username', username);
+            fillup_username();
+        }
+    }
+    function move_it(class_name){ // Handler
+        if (!!$.cookie('clicked')){
+
+        }
+        else{
+            $.cookie('clicked', 1);
+            move(class_name);
+        }
+    }
+
+    function put_in(sm_nos, symbol_name){
+        if (symbol_name === 'cross'){
+            $("."+sm_nos).html('<i style="font-size:3.2rem;" class="fa fa-times">');
+        }
+        else{
+            $("."+sm_nos).html('<i style="font-size:3.2rem;" class="far fa-circle">');
+        }
+    }
+    function fillup_username(){
+        $.ajax({
+            url: "{% url 'fillup_username' %}",
+            method: 'POST',
+            data: {
+                game_id: $('.game_id').val(),
+                person: $.cookie('username'),
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(data){
+                // alert(data);
+            },
+            error: function(){
+                alert("error");
+            }
+        });
+    }
+    function move(sm_nos){
+        $.ajax({
+            url: "{% url 'move' %}",
+            method: 'POST',
+            data: {
+                game_id: $('.game_id').val(),
+                user: $.cookie('username'),
+                sm_nos: sm_nos,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(data){
+                $.removeCookie('clicked');
+                put_in(data['sm_nos'], data['symbol']);
+            },
+            error: function(){
+                alert("error");
+            }
+        });
+    }
+    function previous_gamedata(){
+        var game_id = $('.game_id').val();
+        $.ajax({
+            url: "{% url 'previous_data' %}",
+            method: 'POST',
+            data: {
+                game_id: $('.game_id').val(),
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(data){
+                let d = JSON.parse(data);
+                for(var i=0; i<d.length; i++){
+                    put_in(d[i]['fields']['sm_nos'], d[i]['fields']['symbol']);
+                }
+            },
+            error: function(){
+                alert("error");
+            }
+        });
+    }
+</script>
 {% endblock %}

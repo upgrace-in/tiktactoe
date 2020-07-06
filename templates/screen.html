@@ -1,0 +1,32 @@
+{% extends 'index.html' %}
+{% block base %}
+<style>
+    .new_game{
+        display: none !important;
+    }
+</style>
+<div class="col-md-12" style="margin-top: 100px;">
+    <div class="mx-auto text-center">
+        <h1>Your Game Id Is <span style="color: red;">{{ game_id }}</span></h1>
+        <div class="table-responsive mx-auto text-center col-md-3">
+            <table class="table mx-auto text-center" style="margin-top: 80px;">
+                <tr>
+                    <td><i style="font-size: 2rem;" class="far fa-circle"></i></td>
+                    <td><i style="font-size: 2rem;" class="fa fa-times"></i></td>
+                    <td><i style="font-size: 2rem;" class="fa fa-times"></i></td>
+                </tr>
+                <tr>
+                    <td><i style="font-size: 2rem;" class="fa fa-times"></i></td>
+                    <td><i style="font-size: 2rem;" class="far fa-circle"></i></td>
+                    <td><i style="font-size: 2rem;" class="fa fa-times"></i></td>
+                </tr>
+                <tr>
+                    <td><i style="font-size: 2rem;" class="far fa-circle"></i></td>
+                    <td><i style="font-size: 2rem;" class="fa fa-times"></i></td>
+                    <td><i style="font-size: 2rem;" class="fa fa-times"></i></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

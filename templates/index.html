@@ -1,0 +1,143 @@
+{% load static %}
+<html>
+<head>
+    <title>TikTacToe</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Prince & Mohit Bhai Ka TicTacToe Game">
+    <meta name="keywords" content="tiktactoe">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open Sans|Playfair Display|Work Sans|Cormorant Garamond|Lora|Lobster|Josefin Sans|Roboto|Dancing Script|Abril Fatface|&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+    <style>
+        body{
+            font-family: 'Josefin Sans';
+        }
+        @media(max-width: 1100px){
+
+        }
+        a{
+            text-decoration: none !important;
+        }
+        a:hover{
+            text-decoration: none !important;
+        }
+        html{
+            scroll-behavior: smooth;
+        }
+        @media(max-width: 770px){
+            
+        }
+        .nav-link{
+            color: black !important;
+        }
+        .nav-link:hover{
+            transition: ease 0.5s;
+            color: #00e1ff !important;
+        }
+        .navbar-toggler {
+            border: none !important;
+        }
+        .btn:link,
+        .btn:visited {
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 15px 40px;
+            display: inline-block;
+            border-radius: 100px;
+            transition: all .2s;
+            position: absolute;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-white {
+            background-color: #fff;
+            color: #777;
+        }
+
+        .btn::after {
+            content: "";
+            display: inline-block;
+            height: 100%;
+            width: 100%;
+            border-radius: 100px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            transition: all .4s;
+        }
+
+        .btn-white::after {
+            background-color: #fff;
+        }
+
+        .btn:hover::after {
+            transform: scaleX(1.4) scaleY(1.6);
+            opacity: 0;
+        }
+
+        .btn-animated {
+            animation: moveInBottom 5s ease-out;
+            animation-fill-mode: backwards;
+        }
+
+        @keyframes moveInBottom {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+        }
+    </style>
+</head>
+<body>
+<body>
+<nav id="nav" class="navbar navbar-expand-lg navbar-light bg-light" style="border: 0.5px solid rgba(128,128,128,0.25); border-left: none; border-right: none; z-index: 4; background: white !important;">
+    <div class="container mx-auto text-center">
+        <a href="" style="font-weight: 900; font-size: 2rem;" class="navbar-brand">TikTacToe</a>
+        <button class="navbar-toggler"
+                type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button><br>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item" style="margin: 5px;">
+                    <a class="nav-link" href="{% url 'index' %}">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item" style="margin: 5px;">
+                    <a class="nav-link new_game" href="{% url 'new_game' %}">New Game</a>
+                </li>
+                <li class="nav-item" style="margin: 5px;">
+                    <a class="nav-link" href="">Query Here +91 700-161-7004</a>
+                </li>
+            </ul><br>
+        </div>
+    </div>
+</nav>
+<div class="col-md-12 new_game" style="margin-top: 150px;">
+    <div class="col-md-6 mx-auto text-center" style="margin: 10px;">
+        <button class="btn btn-primary"><a style="color: white !important;" href="{% url 'new_game' %}">New Game</a></button>
+    </div>
+</div>
+{% block base %}
+{% endblock %}
+    </body> 
+</html>

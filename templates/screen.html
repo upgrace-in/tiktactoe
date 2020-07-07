@@ -12,25 +12,70 @@
         <div class="table-responsive mx-auto text-center col-md-3">
             <table class="table mx-auto text-center" style="margin-top: 80px;">
                 <tr>
-                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm1');" class="sm1"></td>
-                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm2');" class="sm2"></td>
-                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm3');" class="sm3"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="socket_send('sm1');" id="sm_nos" class="sm1"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="socket_send('sm2');" id="sm_nos" class="sm2"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="socket_send('sm3');" id="sm_nos" class="sm3"></td>
                 </tr>
                 <tr>
-                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm4');" class="sm4"></td>
-                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm5');" class="sm5"></td>
-                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm6');" class="sm6"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="socket_send('sm4');" id="sm_nos" class="sm4"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="socket_send('sm5');" id="sm_nos" class="sm5"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="socket_send('sm6');" id="sm_nos" class="sm6"></td>
                 </tr>
                 <tr>
-                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm7');" class="sm7"></td>
-                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm8');" class="sm8"></td>
-                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="move_it('sm9');" class="sm9"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="socket_send('sm7');" id="sm_nos" class="sm7"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="socket_send('sm8');" id="sm_nos" class="sm8"></td>
+                    <td style="width: 80px; height: 80px; border: 0.5px solid rgb(216, 216, 216);" onclick="socket_send('sm9');" id="sm_nos" class="sm9"></td>
                 </tr>
             </table>
         </div>
     </div>
 </div>
 <input type="text" style="display: none;" class="game_id" value="{{game_id}}">
+<script>
+    var loc = window.location
+    var wsStart = 'ws://';
+    if(loc.protocol == 'https:'){
+        wsStart = 'wss://'
+    }
+    var endpoint = wsStart + loc.host + loc.pathname;
+    var socket = new WebSocket(endpoint);
+
+    var game_id= $('.game_id').val();
+    var user= $.cookie('username');
+    // var sm_nos= sm_nos
+
+    socket.onmessage = function(e){
+        // console.log("message", e);
+        var e = JSON.parse(e.data);
+        put_in(e['sm_nos'], 'circle');
+    }
+    socket.onopen = function(e){
+        console.log("open", e);
+    }
+    function socket_send(sm_nos){
+        var dict = {
+            'user': user,
+            'sm_nos': sm_nos
+        }
+        socket.send(JSON.stringify(dict));
+    }
+    socket.onerror = function(e){
+        console.log("error", e)
+    }
+    socket.onclose = function(e){
+        console.log("close", e)
+    }
+
+</script>
+
+
+
+
+
+
+
+
+
 <script>
     $(document).ready(function(){
         ask_username();
@@ -121,4 +166,6 @@
         });
     }
 </script>
+
+
 {% endblock %}

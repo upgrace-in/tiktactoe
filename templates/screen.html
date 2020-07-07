@@ -31,6 +31,7 @@
     </div>
 </div>
 <input type="text" style="display: none;" class="game_id" value="{{game_id}}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>
 <script>
     var loc = window.location
     var wsStart = 'ws://';
@@ -38,14 +39,12 @@
         wsStart = 'wss://'
     }
     var endpoint = wsStart + loc.host + loc.pathname;
-    var socket = new WebSocket(endpoint);
+    var socket = new ReconnectingWebSocket(endpoint);
 
     var game_id= $('.game_id').val();
-    var user= $.cookie('username');
-    // var sm_nos= sm_nos
+    var user= $.cookie("username");
 
     socket.onmessage = function(e){
-        // console.log("message", e);
         var e = JSON.parse(e.data);
         put_in(e['sm_nos'], 'circle');
     }
@@ -119,7 +118,7 @@
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
             },
             success: function(data){
-                // alert(data);
+                
             },
             error: function(){
                 alert("error");

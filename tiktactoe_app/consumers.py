@@ -11,7 +11,7 @@ class ChatConsumer(AsyncConsumer):
         print("connected", event)
         
         game_id = self.scope['url_route']['kwargs']['game_id']
-        print(game_id)
+        self.game_id = game_id
         self.game_room = game_id
         await self.channel_layer.group_add(
             self.game_room,
@@ -22,39 +22,38 @@ class ChatConsumer(AsyncConsumer):
         })
 
     async def websocket_receive(self, event):
-        print("received", event)
         main_dict = event.get('text', None)
         if main_dict is not None:
             loaded_dict = json.loads(main_dict)
-            myresponse = {
-                'sm_nos': loaded_dict["sm_nos"]
+            m = self.save_move(self.game_id, loaded_dict['user'], loaded_dict['sm_nos'])
+            print(m)
+            response = {
+                'sm_nos': m.sm_nos,
+                'symbol': m.symbol
             }
-            new_event = {
-                "type": "websocket.send",
-                "text": json.dumps(myresponse)
-            }
-            await self.channel_layer.group_send({
+            await self.channel_layer.group_send(
                 self.game_room,
                 {
                     "type": "game_move",
-                    "message": "hello"
+                    "text": json.dumps(response)
                 }
-            })
+            )
 
     async def game_move(self, event):
-        print('message', event)
+        await self.send({
+            "type": "websocket.send",
+            "text": event['text']
+        })
 
     async def websocket_disconnect(self, event):
         print("disconnected", event)
 
     @database_sync_to_async
-    def get_move(self, game_id, user, sm_nos):
+    def save_move(self, game_id, user, sm_nos):
         m = models.tiktactoe.objects.get(linker=game_id)
         symbol = '' 
         if m.first_player == user:
             symbol = 'cross'
         else:
             symbol = 'circle'
-        lnk = models.game.objects.create(link=m, user=user, sm_nos=sm_nos, symbol=symbol)
-        lnk.save()
-        return lnk
+        return models.game.objects.create(link=m, user=user, sm_nos=sm_nos, symbol=symbol)

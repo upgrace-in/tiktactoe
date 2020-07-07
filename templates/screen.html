@@ -41,19 +41,16 @@
     var endpoint = wsStart + loc.host + loc.pathname;
     var socket = new ReconnectingWebSocket(endpoint);
 
-    var game_id= $('.game_id').val();
-    var user= $.cookie("username");
-
     socket.onmessage = function(e){
         var e = JSON.parse(e.data);
-        put_in(e['sm_nos'], 'circle');
+        put_in(e['sm_nos'], e['symbol']);
     }
     socket.onopen = function(e){
         console.log("open", e);
     }
     function socket_send(sm_nos){
         var dict = {
-            'user': user,
+            'user': $.cookie("username"),
             'sm_nos': sm_nos
         }
         socket.send(JSON.stringify(dict));

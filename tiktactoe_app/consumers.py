@@ -3,7 +3,7 @@ import json
 from django.contrib.auth import get_user_model
 from channels.db import database_sync_to_async
 from channels.consumer import AsyncConsumer
-from . import models
+from tiktactoe_app.models import game, tiktactoe
 
 
 class ChatConsumer(AsyncConsumer):
@@ -25,7 +25,7 @@ class ChatConsumer(AsyncConsumer):
         main_dict = event.get('text', None)
         if main_dict is not None:
             loaded_dict = json.loads(main_dict)
-            m = self.save_move(self.game_id, loaded_dict['user'], loaded_dict['sm_nos'])
+            m = await self.save_move(self.game_id, loaded_dict['user'], loaded_dict['sm_nos'])
             print(m)
             response = {
                 'sm_nos': m.sm_nos,
@@ -50,10 +50,10 @@ class ChatConsumer(AsyncConsumer):
 
     @database_sync_to_async
     def save_move(self, game_id, user, sm_nos):
-        m = models.tiktactoe.objects.get(linker=game_id)
+        m = tiktactoe.objects.get(linker=game_id)
         symbol = '' 
         if m.first_player == user:
             symbol = 'cross'
         else:
             symbol = 'circle'
-        return models.game.objects.create(link=m, user=user, sm_nos=sm_nos, symbol=symbol)
+        return game.objects.create(link=m, user=user, sm_nos=sm_nos, symbol=symbol)

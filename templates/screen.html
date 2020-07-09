@@ -31,6 +31,61 @@
     </div>
 </div>
 <input type="text" style="display: none;" class="game_id" value="{{game_id}}">
+
+<script>
+    var patterns = 
+    [
+                    ['sm1', 'sm2', 'sm3'],
+                    ['sm1', 'sm4', 'sm7'],
+                    ['sm3', 'sm6', 'sm9'],
+                    ['sm9', 'sm8', 'sm7'],
+                    ['sm1', 'sm5', 'sm9'],
+                    ['sm3', 'sm5', 'sm7'],
+                    ['sm2', 'sm5', 'sm8'],
+                    ['sm4', 'sm5', 'sm6']
+    ];
+    function logic_of_game(){
+        var times_array = [];
+        var circle_array = [];
+        for(var i=0; i<10; i++){
+            var s = $('.s_sm'+i).attr('id');
+            if (s === 'times'){
+                times_array.push('sm'+i);
+            }   
+            else if(s === 'circle'){
+                circle_array.push('sm'+i);
+            }
+            else{
+                
+            }
+        }
+        check_all_times();
+        check_all_circles();
+    }
+    function check_all_times(){
+        for(var i=0; i<patterns.length; i++){
+            for(var p=0; p<i[0].length; p++){
+                var value = times_array.includes(p[i])
+                if (value == true){
+                    return true;
+                    break;
+                }
+            }
+        }
+    }
+    function check_all_circles(){
+        for(var i=0; i<patterns.length; i++){
+            for(var p=0; p<i[0].length; p++){
+                var value = circle_array.includes(p[i])
+                if (value == true){
+                    return true;
+                    break;
+                }
+            }
+        }
+    }
+</script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>
 <script>
     var loc = window.location
@@ -75,7 +130,9 @@
             'sm_nos': sm_nos
         }
         if ((!!$.cookie('clicked')) && ((parseInt($.cookie('clicked'))) == 1)){
-            
+            put_in(sm_nos, 'circle'); //isko hatahoo
+            logic_of_game(); 
+            $.cookie('clicked', 0); //isko hatahoo
         }
         else{
             if ((check_it()) == 0){
@@ -83,7 +140,9 @@
             }
             else{
                 $.cookie('clicked', 1);
-                socket.send(JSON.stringify(dict));
+                put_in(sm_nos, 'cross'); //isko hatahoo
+                logic_of_game(); 
+                // socket.send(JSON.stringify(dict)); //isko lagaoo
             }
         }
     }
@@ -104,15 +163,6 @@
         return counts;
     }
 </script>
-
-
-
-
-
-
-
-
-
 <script>
     $(document).ready(function(){
         ask_username();
@@ -137,13 +187,14 @@
             move(class_name);
         }
     }
-
     function put_in(sm_nos, symbol_name){
         if (symbol_name === 'cross'){
-            $("."+sm_nos).html('<i style="font-size:3.2rem;" id="times" class="fa fa-times">');
+            var times = '<i style="font-size:3.2rem;" id="times" class="fa s_'+sm_nos+' fa-times">'
+            $("."+sm_nos).html(times);
         }
         else{
-            $("."+sm_nos).html('<i style="font-size:3.2rem;" id="circle" class="far fa-circle">');
+            var circle = '<i style="font-size:3.2rem;" id="circle" class="far s_'+sm_nos+' fa-circle">'
+            $("."+sm_nos).html(circle);
         }
     }
     function fillup_username(){

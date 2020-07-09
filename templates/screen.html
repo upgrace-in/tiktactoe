@@ -41,9 +41,30 @@
     var endpoint = wsStart + loc.host + loc.pathname;
     var socket = new ReconnectingWebSocket(endpoint);
 
+    function check_for_second_user(user){
+        if (($.cookie('username')) != user){
+            $.cookie('second_user', user);
+            console.log("created", $.cookie('second_user'));
+            $.cookie('clicked', 0);
+        }
+    }
+
     socket.onmessage = function(e){
         var e = JSON.parse(e.data);
-        put_in(e['sm_nos'], e['symbol']);
+        if(e['spectator'] != undefined){
+            alert(e['spectator']);
+        }
+        else{
+            if(!!$.cookie('second_user')){
+                if ($.cookie('second_user') === e['user']){
+                    $.cookie('clicked', 0);
+                }
+            }
+            else{
+                check_for_second_user(e['user']);
+            }
+            put_in(e['sm_nos'], e['symbol']);
+        }
     }
     socket.onopen = function(e){
         console.log("open", e);
@@ -53,7 +74,18 @@
             'user': $.cookie("username"),
             'sm_nos': sm_nos
         }
-        socket.send(JSON.stringify(dict));
+        if ((!!$.cookie('clicked')) && ((parseInt($.cookie('clicked'))) == 1)){
+            
+        }
+        else{
+            if ((check_it()) == 0){
+            
+            }
+            else{
+                $.cookie('clicked', 1);
+                socket.send(JSON.stringify(dict));
+            }
+        }
     }
     socket.onerror = function(e){
         console.log("error", e)
@@ -62,6 +94,15 @@
         console.log("close", e)
     }
 
+    function check_it(){
+        var counts = 0;
+        $("[id='sm_nos']").each(function(){
+            if (($(this).html()) === ''){
+                counts = parseInt(counts)+1;
+            }
+        })
+        return counts;
+    }
 </script>
 
 
@@ -79,10 +120,10 @@
     });
     function ask_username(){
         if(!!$.cookie('username')){
-            
+
         }
         else{
-            let username = prompt('Choose An Username').toUpperCase();
+            let username = prompt('Choose An Username');
             $.cookie('username', username);
             fillup_username();
         }
@@ -99,10 +140,10 @@
 
     function put_in(sm_nos, symbol_name){
         if (symbol_name === 'cross'){
-            $("."+sm_nos).html('<i style="font-size:3.2rem;" class="fa fa-times">');
+            $("."+sm_nos).html('<i style="font-size:3.2rem;" id="times" class="fa fa-times">');
         }
         else{
-            $("."+sm_nos).html('<i style="font-size:3.2rem;" class="far fa-circle">');
+            $("."+sm_nos).html('<i style="font-size:3.2rem;" id="circle" class="far fa-circle">');
         }
     }
     function fillup_username(){
@@ -115,7 +156,14 @@
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
             },
             success: function(data){
-                
+                if(data === 'full'){
+                    $.cookie('clicked', 1);
+                    var spectator = $.cookie('username')+" Is Spectating This Match";
+                    var dict = {
+                        spectator: spectator
+                    }
+                    socket.send(JSON.stringify(dict));
+                }
             },
             error: function(){
                 alert("error");

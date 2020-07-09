@@ -10,14 +10,15 @@ def fillup_username(request):
     game_id = request.POST['game_id']
     person = request.POST['person']
     m = models.tiktactoe.objects.get(linker=game_id)
-    if m.first_player is None:
-        m.first_player = person
+    if (m.first_player and m.second_player) is not None:
+        return HttpResponse("full")
     else:
-        if m.first_player == person:
-            pass
+        if m.first_player is None:
+            m.first_player = person
         else:
-            m.second_player = person  
-    m.save()
+            if m.second_player is None:
+                m.second_player = person  
+        m.save()
     return HttpResponse('Done')
 
 def game_screen(request, game_id):

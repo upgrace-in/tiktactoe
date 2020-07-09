@@ -25,19 +25,32 @@ class ChatConsumer(AsyncConsumer):
         main_dict = event.get('text', None)
         if main_dict is not None:
             loaded_dict = json.loads(main_dict)
-            m = await self.save_move(self.game_id, loaded_dict['user'], loaded_dict['sm_nos'])
-            print(m)
-            response = {
-                'sm_nos': m.sm_nos,
-                'symbol': m.symbol
-            }
-            await self.channel_layer.group_send(
-                self.game_room,
-                {
-                    "type": "game_move",
-                    "text": json.dumps(response)
+            try:
+                if loaded_dict['spectator'] is not None:
+                    response = {
+                        'spectator': loaded_dict['spectator'],
+                    }
+                    await self.channel_layer.group_send(
+                        self.game_room,
+                        {
+                            "type": "game_move",
+                            "text": json.dumps(response)
+                        }
+                    )    
+            except KeyError:
+                m = await self.save_move(self.game_id, loaded_dict['user'], loaded_dict['sm_nos'])
+                response = {
+                    'user': m.user,
+                    'sm_nos': m.sm_nos,
+                    'symbol': m.symbol
                 }
-            )
+                await self.channel_layer.group_send(
+                    self.game_room,
+                    {
+                        "type": "game_move",
+                        "text": json.dumps(response)
+                    }
+                )
 
     async def game_move(self, event):
         await self.send({

@@ -33,6 +33,16 @@
 <input type="text" style="display: none;" class="game_id" value="{{game_id}}">
 
 <script>
+    function put_in(sm_nos, symbol_name){
+        if (symbol_name === 'cross'){
+            var times = '<i style="font-size:3.2rem;" id="times" class="fa s_'+sm_nos+' fa-times">'
+            $("."+sm_nos).html(times);
+        }
+        else{
+            var circle = '<i style="font-size:3.2rem;" id="circle" class="far s_'+sm_nos+' fa-circle">'
+            $("."+sm_nos).html(circle);
+        }
+    }
     var patterns = 
     [
                     ['sm1', 'sm2', 'sm3'],
@@ -44,7 +54,7 @@
                     ['sm2', 'sm5', 'sm8'],
                     ['sm4', 'sm5', 'sm6']
     ];
-    function logic_of_game(){
+    function logic_of_game(user){
         var times_array = [];
         var circle_array = [];
         for(var i=0; i<10; i++){
@@ -59,30 +69,36 @@
                 
             }
         }
-        check_all_times();
-        check_all_circles();
+        check_all_times(times_array, user);
+        check_all_circles(circle_array, user);
     }
-    function check_all_times(){
+    function check_all_times(times_array, user){
         for(var i=0; i<patterns.length; i++){
-            for(var p=0; p<i[0].length; p++){
-                var value = times_array.includes(p[i])
-                if (value == true){
-                    return true;
+            var pat = patterns[i];
+            if((times_array.length) > 2){
+                var value = pat.every(i => times_array.includes(i));
+                if(value === true){
+                    winner(user); 
                     break;
                 }
             }
         }
     }
-    function check_all_circles(){
-        for(var i=0; i<patterns.length; i++){
-            for(var p=0; p<i[0].length; p++){
-                var value = circle_array.includes(p[i])
-                if (value == true){
-                    return true;
+    function check_all_circles(circle_array, user){
+        for(var i=0; i<patterns.length; i++){    
+            var pat = patterns[i];
+            if((circle_array.length) > 2){
+                var value = pat.every(i => circle_array.includes(i));
+                if(value === true){
+                    winner(user);
                     break;
                 }
             }
         }
+    }
+    function winner(user){
+        alert(user+" has won the match !!!");
+        $.cookie('clicked', 0);
     }
 </script>
 
@@ -110,6 +126,8 @@
             alert(e['spectator']);
         }
         else{
+            put_in(e['sm_nos'], e['symbol']);
+            logic_of_game(e['user']);
             if(!!$.cookie('second_user')){
                 if ($.cookie('second_user') === e['user']){
                     $.cookie('clicked', 0);
@@ -118,7 +136,6 @@
             else{
                 check_for_second_user(e['user']);
             }
-            put_in(e['sm_nos'], e['symbol']);
         }
     }
     socket.onopen = function(e){
@@ -130,20 +147,11 @@
             'sm_nos': sm_nos
         }
         if ((!!$.cookie('clicked')) && ((parseInt($.cookie('clicked'))) == 1)){
-            put_in(sm_nos, 'circle'); //isko hatahoo
-            logic_of_game(); 
-            $.cookie('clicked', 0); //isko hatahoo
+            
         }
         else{
-            if ((check_it()) == 0){
-            
-            }
-            else{
-                $.cookie('clicked', 1);
-                put_in(sm_nos, 'cross'); //isko hatahoo
-                logic_of_game(); 
-                // socket.send(JSON.stringify(dict)); //isko lagaoo
-            }
+            $.cookie('clicked', 1);
+            socket.send(JSON.stringify(dict));
         }
     }
     socket.onerror = function(e){
@@ -185,16 +193,6 @@
         else{
             $.cookie('clicked', 1);
             move(class_name);
-        }
-    }
-    function put_in(sm_nos, symbol_name){
-        if (symbol_name === 'cross'){
-            var times = '<i style="font-size:3.2rem;" id="times" class="fa s_'+sm_nos+' fa-times">'
-            $("."+sm_nos).html(times);
-        }
-        else{
-            var circle = '<i style="font-size:3.2rem;" id="circle" class="far s_'+sm_nos+' fa-circle">'
-            $("."+sm_nos).html(circle);
         }
     }
     function fillup_username(){

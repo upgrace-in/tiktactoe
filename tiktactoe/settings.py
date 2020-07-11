@@ -1,3 +1,5 @@
+
+
 """
 Django settings for tiktactoe project.
 
@@ -25,7 +27,7 @@ SECRET_KEY = '$p$011qqczx4*(=hpl$y6fsejdqcp_anorl^44l#4tvu0l4m-k'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['upgrace.in']
 
 
 # Application definition
@@ -70,7 +72,7 @@ TEMPLATES = [
     },
 ]
 
-# WSGI_APPLICATION = 'tiktactoe.wsgi.application'
+WSGI_APPLICATION = 'tiktactoe.wsgi.application'
 
 
 # Database
@@ -128,7 +130,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
         },
     },
 }

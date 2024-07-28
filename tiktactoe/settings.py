@@ -27,7 +27,7 @@ SECRET_KEY = '$p$011qqczx4*(=hpl$y6fsejdqcp_anorl^44l#4tvu0l4m-k'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['upgrace.in']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
